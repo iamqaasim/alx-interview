@@ -1,50 +1,37 @@
+#!/usr/bin/python3
+'''a script that reads stdin line by line and computes metrics'''
+
+
 import sys
-import signal
 
-# Define a signal handler for CTRL + C
-def signal_handler(signal, frame):
-    print_statistics()
-    sys.exit(0)
+cache = {'200': 0, '301': 0, '400': 0, '401': 0,
+         '403': 0, '404': 0, '405': 0, '500': 0}
+total_size = 0
+counter = 0
 
-# Register the signal handler for CTRL + C
-signal.signal(signal.SIGINT, signal_handler)
+try:
+    for line in sys.stdin:
+        line_list = line.split(" ")
+        if len(line_list) > 4:
+            code = line_list[-2]
+            size = int(line_list[-1])
+            if code in cache.keys():
+                cache[code] += 1
+            total_size += size
+            counter += 1
 
-# Initialize variables to store statistics
-total_file_size = 0
-status_code_count = {}
+        if counter == 10:
+            counter = 0
+            print('File size: {}'.format(total_size))
+            for key, value in sorted(cache.items()):
+                if value != 0:
+                    print('{}: {}'.format(key, value))
 
-# Function to print the statistics
-def print_statistics():
-    print("File size:", total_file_size)
-    for status_code in sorted(status_code_count):
-        print(status_code, ":", status_code_count[status_code])
+except Exception as err:
+    pass
 
-# Loop through stdin line by line
-line_count = 0
-for line in sys.stdin:
-    line_count += 1
-    # Split the line into fields using whitespace as delimiter
-    fields = line.split()
-    if len(fields) != 7:
-        # Skip lines that do not have the expected format
-        continue
-    ip_address, _, _, request, status_code, file_size, _ = fields
-    if request != "GET /projects/260 HTTP/1.1":
-        # Skip lines that do not have the expected request
-        continue
-    try:
-        # Parse the status code and file size as integers
-        status_code = int(status_code)
-        file_size = int(file_size)
-    except ValueError:
-        # Skip lines with non-integer status code or file size
-        continue
-    # Update the total file size
-    total_file_size += file_size
-    # Update the status code count
-    status_code_count[status_code] = status_code_count.get(status_code, 0) + 1
-    # Print the statistics after every 10 lines
-    if line_count % 10 == 0:
-        print_statistics()
-# Print the final statistics
-print_statistics()
+finally:
+    print('File size: {}'.format(total_size))
+    for key, value in sorted(cache.items()):
+        if value != 0:
+            print('{}: {}'.format(key, value))

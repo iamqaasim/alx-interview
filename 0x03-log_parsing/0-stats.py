@@ -4,7 +4,7 @@
 import sys
 
 # cache for storing HTTP status codes and their counts
-cache = {'200': 0, '301': 0, '400': 0, '401': 0, '403': 0, '404': 0, '405': 0, '500': 0}
+cache = {'200':0, '301':0, '400':0, '401':0, '403':0, '404':0, '405':0, '500':0}
 
 # variables for storing total size and counter for every 10 lines
 total_size = 0

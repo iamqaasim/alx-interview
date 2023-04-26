@@ -1,8 +1,5 @@
 #!/usr/bin/python3
-'''
-N Queens Challenge
-As a person who enjoys chess this was a very fun challenge 
-'''
+'''N Queens Challenge'''
 
 import sys
 
